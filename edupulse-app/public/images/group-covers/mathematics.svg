@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240" role="img" aria-label="Ilustrasi topik matematika">
+  <defs>
+    <linearGradient id="mathBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e7490" />
+      <stop offset="1" stop-color="#0891b2" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="20" fill="url(#mathBg)" />
+  <g stroke="#a5f3fc" stroke-width="2" opacity="0.35">
+    <path d="M0 60 H400 M0 120 H400 M0 180 H400" />
+    <path d="M100 0 V240 M200 0 V240 M300 0 V240" />
+  </g>
+  <g fill="none" stroke="#ecfeff" stroke-width="9" stroke-linecap="round">
+    <path d="M74 104 H134 M104 74 V134" />
+    <path d="M170 74 H230 M170 134 H230" />
+    <path d="M266 74 C296 74 296 134 266 134 C236 134 236 74 266 74 Z" />
+  </g>
+  <circle cx="336" cy="176" r="18" fill="none" stroke="#67e8f9" stroke-width="7" />
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240" role="img" aria-label="Ilustrasi topik bahasa">
+  <defs>
+    <linearGradient id="langBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4338ca" />
+      <stop offset="1" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="20" fill="url(#langBg)" />
+  <g>
+    <rect x="54" y="52" width="150" height="88" rx="18" fill="#e0e7ff" opacity="0.95" />
+    <path d="M84 140 L74 172 L112 140 Z" fill="#e0e7ff" opacity="0.95" />
+    <g fill="#4338ca">
+      <rect x="78" y="78" width="102" height="9" rx="4.5" />
+      <rect x="78" y="98" width="74" height="9" rx="4.5" />
+    </g>
+  </g>
+  <g>
+    <rect x="196" y="112" width="150" height="88" rx="18" fill="#c7d2fe" opacity="0.95" />
+    <path d="M316 200 L326 232 L288 200 Z" fill="#c7d2fe" opacity="0.95" />
+    <g fill="#4f46e5">
+      <rect x="220" y="138" width="102" height="9" rx="4.5" />
+      <rect x="220" y="158" width="74" height="9" rx="4.5" />
+    </g>
+  </g>
+</svg>

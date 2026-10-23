@@ -1,0 +1,9 @@
+﻿{
+    "006_seed_topics.sql":  "20261014160037\\_006_seed_topics.sql",
+    "003_indexes.sql":  "20261014160034\\_003_indexes.sql",
+    "002_tables.sql":  "20261014160033\\_002_tables.sql",
+    "005_rls_policies.sql":  "20261014160036\\_005_rls_policies.sql",
+    "001_extensions_and_schema.sql":  "20261014160032\\_001_extensions_and_schema.sql",
+    "007_atomic_booking_rpc.sql":  "20261014160038\\_007_atomic_booking_rpc.sql",
+    "004_functions_and_triggers.sql":  "20261014160035\\_004_functions_and_triggers.sql"
+}

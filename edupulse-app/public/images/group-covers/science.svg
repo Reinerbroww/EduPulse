@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="400" height="240" role="img" aria-label="Ilustrasi topik sains">
+  <defs>
+    <linearGradient id="sciBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#047857" />
+      <stop offset="1" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="20" fill="url(#sciBg)" />
+  <g fill="none" stroke="#d1fae5" stroke-width="6" opacity="0.9">
+    <ellipse cx="140" cy="120" rx="72" ry="28" />
+    <ellipse cx="140" cy="120" rx="72" ry="28" transform="rotate(60 140 120)" />
+    <ellipse cx="140" cy="120" rx="72" ry="28" transform="rotate(120 140 120)" />
+  </g>
+  <circle cx="140" cy="120" r="16" fill="#a7f3d0" />
+  <g stroke="#a7f3d0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M286 62 V110 L250 172 A14 14 0 0 0 262 192 H322 A14 14 0 0 0 334 172 L298 110 V62" />
+    <path d="M276 62 H308" />
+  </g>
+  <circle cx="286" cy="164" r="9" fill="#6ee7b7" />
+  <circle cx="308" cy="178" r="6" fill="#6ee7b7" />
+</svg>
