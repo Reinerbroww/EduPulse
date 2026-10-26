@@ -95,7 +95,13 @@ export default async function BookingPage({
 
               {!hasAvailableSlots && (
                 <div className="mb-4 rounded-[var(--radius-card)] border border-warning/30 bg-warning-soft p-4 text-sm text-warning">
-                  Tidak ada slot tersedia untuk mentor ini saat ini.
+                  <p className="font-medium">
+                    Belum ada slot jadwal yang tersedia untuk mentor ini.
+                  </p>
+                  <p className="mt-1 text-warning/90">
+                    Mentor belum membuka jadwal mendatang. Coba lagi nanti, atau
+                    lihat mentor lain yang sudah memiliki jadwal.
+                  </p>
                 </div>
               )}
 

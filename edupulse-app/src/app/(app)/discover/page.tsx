@@ -111,7 +111,10 @@ async function PartnerTab() {
       {candidates.map((candidate) => (
         <Card key={candidate.profile.id}>
           <CardHeader className="flex flex-row items-start gap-3">
-            <Avatar name={candidate.profile.display_name} />
+            <Avatar
+              name={candidate.profile.display_name}
+              src={candidate.profile.avatar_url}
+            />
             <div className="flex flex-col gap-1">
               <CardTitle>
                 {candidate.profile.display_name ?? "Pelajar"}
@@ -246,7 +249,10 @@ async function MentorTab() {
         {mentors.map((mentor) => (
           <Card key={mentor.user_id}>
             <CardHeader className="flex flex-row items-start gap-3">
-              <Avatar name={mentor.profiles?.display_name} />
+              <Avatar
+                name={mentor.profiles?.display_name}
+                src={mentor.profiles?.avatar_url}
+              />
               <div className="flex flex-col gap-1">
                 <CardTitle>
                   {mentor.profiles?.display_name ?? "Mentor"}

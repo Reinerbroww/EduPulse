@@ -58,6 +58,13 @@ export const mentorSlotSchema = z
   .refine((value) => new Date(value.endsAt) > new Date(value.startsAt), {
     message: "Waktu selesai harus setelah waktu mulai.",
     path: ["endsAt"],
+  })
+  // A slot that starts in the past can never be booked: the booking page only
+  // lists slots with `starts_at > now`, so it would silently vanish and the
+  // learner would see "tidak ada slot tersedia". Reject it at creation instead.
+  .refine((value) => new Date(value.startsAt).getTime() > Date.now(), {
+    message: "Waktu mulai harus di masa depan.",
+    path: ["startsAt"],
   });
 
 export type MentorProfileInput = z.infer<typeof mentorProfileSchema>;

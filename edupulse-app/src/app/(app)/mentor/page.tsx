@@ -6,6 +6,7 @@ import { MentorVerificationSubmit } from "@/components/app/mentor-verification-s
 import { PageHeader } from "@/components/app/page-header";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Alert } from "@/components/ui/alert";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import {
@@ -17,6 +18,7 @@ import {
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireUser } from "@/lib/auth/guards";
+import { getCurrentUserContext } from "@/lib/data/profile";
 import {
   getMyMentorCv,
   getMyMentorProfile,
@@ -171,12 +173,14 @@ function VerificationFlowCard({ steps }: { steps: FlowStep[] }) {
 
 export default async function MentorDashboardPage() {
   const user = await requireUser("/mentor");
-  const [profile, services, slots, cvLookup] = await Promise.all([
+  const [profile, services, slots, cvLookup, context] = await Promise.all([
     getMyMentorProfile(user.id),
     listMyMentorServices(user.id),
     listMyMentorSlots(user.id),
     getMyMentorCv(user.id),
+    getCurrentUserContext(),
   ]);
+  const accountProfile = context?.profile ?? null;
 
   const hasCv = Boolean(cvLookup.cv);
   const steps = buildVerificationFlow(
@@ -243,7 +247,25 @@ export default async function MentorDashboardPage() {
                 </Link>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <Avatar
+                  name={accountProfile?.display_name}
+                  src={accountProfile?.avatar_url}
+                  size="lg"
+                />
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-ink">
+                    {accountProfile?.display_name ?? "Mentor"}
+                  </span>
+                  <Link
+                    href="/profile"
+                    className={buttonClasses("ghost", "sm", "no-underline")}
+                  >
+                    Ubah foto profil
+                  </Link>
+                </div>
+              </div>
               <h3 className="text-base font-semibold">{profile.headline}</h3>
               <p className="text-sm text-muted">
                 {profile.expertise_summary}

@@ -1,9 +1,17 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/utils/cn";
 
 const SIZES = {
   sm: "size-9 text-sm",
   md: "size-11 text-base",
   lg: "size-14 text-lg",
+} as const;
+
+const SIZE_PX = {
+  sm: 36,
+  md: 44,
+  lg: 56,
 } as const;
 
 const TONES = [
@@ -35,14 +43,33 @@ export function initialsFor(name: string | null | undefined): string {
 
 export function Avatar({
   name,
+  src,
   size = "md",
   className,
 }: {
   name: string | null | undefined;
+  src?: string | null;
   size?: keyof typeof SIZES;
   className?: string;
 }) {
   const label = (name ?? "").trim() || "Pengguna";
+
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={label}
+        width={SIZE_PX[size]}
+        height={SIZE_PX[size]}
+        className={cn(
+          "shrink-0 rounded-full object-cover",
+          SIZES[size],
+          className,
+        )}
+      />
+    );
+  }
+
   const initials = initialsFor(label);
 
   return (

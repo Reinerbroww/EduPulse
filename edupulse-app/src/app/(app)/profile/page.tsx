@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/app/page-header";
+import { AvatarCard } from "@/components/app/avatar-card";
 import { AvailabilityManager } from "@/components/app/availability-manager";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { buttonClasses } from "@/components/ui/button";
@@ -73,6 +74,18 @@ export default async function ProfilePage() {
               <span className="font-medium">{row.value}</span>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Foto profil</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AvatarCard
+            avatarUrl={profile?.avatar_url ?? null}
+            name={profile?.display_name ?? null}
+          />
         </CardContent>
       </Card>
 
