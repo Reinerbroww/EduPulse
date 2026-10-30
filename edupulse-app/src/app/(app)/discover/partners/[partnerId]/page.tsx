@@ -141,9 +141,11 @@ export default async function PartnerDetailPage({
                       {goal.topicName && (
                         <Badge tone="neutral">{goal.topicName}</Badge>
                       )}
-                      <Badge tone="neutral">
-                        {labelFor(supportModeLabels, goal.support_mode)}
-                      </Badge>
+                      {goal.support_modes.map((mode) => (
+                        <Badge key={mode} tone="neutral">
+                          {labelFor(supportModeLabels, mode)}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 ))

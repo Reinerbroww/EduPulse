@@ -14,7 +14,7 @@ function parseGoalForm(formData: FormData) {
     description: formData.get("description") ?? "",
     topicId: formData.get("topicId") ?? "",
     targetDate: formData.get("targetDate") ?? "",
-    supportMode: formData.get("supportMode"),
+    supportModes: formData.getAll("supportModes"),
     visibility: formData.get("visibility"),
   });
 }
@@ -42,7 +42,7 @@ export async function createLearningGoal(
     description: parsed.data.description || null,
     topic_id: parsed.data.topicId || null,
     target_date: parsed.data.targetDate || null,
-    support_mode: parsed.data.supportMode,
+    support_modes: parsed.data.supportModes,
     visibility: parsed.data.visibility,
   });
 
@@ -85,7 +85,7 @@ export async function updateLearningGoal(
       description: parsed.data.description || null,
       topic_id: parsed.data.topicId || null,
       target_date: parsed.data.targetDate || null,
-      support_mode: parsed.data.supportMode,
+      support_modes: parsed.data.supportModes,
       visibility: parsed.data.visibility,
     })
     .eq("id", goalId)

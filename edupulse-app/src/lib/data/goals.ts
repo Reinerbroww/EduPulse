@@ -7,7 +7,7 @@ export interface GoalListItem {
   description: string | null;
   topic_id: string | null;
   target_date: string | null;
-  support_mode: string;
+  support_modes: string[];
   visibility: string;
   status: string;
   created_at: string;
@@ -20,7 +20,7 @@ export async function getLearningGoals(): Promise<GoalListItem[]> {
   const { data, error } = await supabase
     .from("learning_goals")
     .select(
-      "id, title, description, topic_id, target_date, support_mode, visibility, status, created_at, topics(name)",
+      "id, title, description, topic_id, target_date, support_modes, visibility, status, created_at, topics(name)",
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
@@ -39,7 +39,7 @@ export async function getLearningGoal(
   const { data, error } = await supabase
     .from("learning_goals")
     .select(
-      "id, title, description, topic_id, target_date, support_mode, visibility, status, created_at, topics(name)",
+      "id, title, description, topic_id, target_date, support_modes, visibility, status, created_at, topics(name)",
     )
     .eq("id", goalId)
     .eq("user_id", userId)

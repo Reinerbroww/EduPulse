@@ -114,7 +114,7 @@ export interface GoalProgress {
     title: string;
     description: string | null;
     target_date: string | null;
-    support_mode: string;
+    support_modes: string[];
     status: string;
   };
   updates: GoalProgressUpdate[];
@@ -130,7 +130,7 @@ export async function getGoalProgress(
 
   const { data: goal, error } = await supabase
     .from("learning_goals")
-    .select("id, title, description, target_date, support_mode, status, user_id")
+    .select("id, title, description, target_date, support_modes, status, user_id")
     .eq("id", goalId)
     .maybeSingle();
 
@@ -207,7 +207,7 @@ export async function getGoalProgress(
       title: goal.title,
       description: goal.description,
       target_date: goal.target_date,
-      support_mode: goal.support_mode,
+      support_modes: goal.support_modes,
       status: goal.status,
     },
     updates: mapped,

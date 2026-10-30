@@ -26,6 +26,24 @@ export const supportModeLabels: Record<string, string> = {
   any: "Semua pilihan",
 };
 
+export const supportModeOptions = ["partner", "group", "mentor"] as const;
+
+export function formatSupportModes(
+  modes: string[] | null | undefined,
+): string {
+  if (!modes || modes.length === 0) return "Belum dipilih";
+  if (modes.includes("any")) return supportModeLabels.any;
+
+  const unique = Array.from(new Set(modes));
+  if (unique.length >= supportModeOptions.length) {
+    return supportModeLabels.any;
+  }
+
+  return unique
+    .map((mode) => supportModeLabels[mode] ?? mode)
+    .join(", ");
+}
+
 export const educationLevelLabels: Record<string, string> = {
   school: "Sekolah",
   university: "Kuliah",

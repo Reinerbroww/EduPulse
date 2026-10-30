@@ -4,10 +4,20 @@ import { Logo } from "@/components/brand/logo";
 import { NavLinks } from "@/components/app/nav-links";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth/actions";
+import { isDemoModeEnabled } from "@/lib/demo/fixtures";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
+      {isDemoModeEnabled() ? (
+        <div
+          role="status"
+          className="border-b border-warning/30 bg-warning-soft px-4 py-2 text-center text-xs font-medium text-ink"
+        >
+          Mode demo aktif — data contoh untuk mencoba alur, bukan data produksi.
+        </div>
+      ) : null}
+
       <header className="sticky top-0 z-10 border-b border-border bg-surface/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-6">
@@ -36,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-muted sm:px-6">
-          EduPulse — ruang belajar bersama. MVP Milestone 1.
+          EduPulse — ruang belajar bersama.
         </div>
       </footer>
     </div>

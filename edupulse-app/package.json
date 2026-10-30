@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "set-moderator": "node scripts/set-moderator.mjs"
+    "set-moderator": "node scripts/set-moderator.mjs",
+    "seed-demo": "node scripts/seed-demo.mjs",
+    "reset-demo": "node scripts/reset-demo.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -29,6 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "pg": "^8.23.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

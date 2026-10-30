@@ -6,6 +6,7 @@ import { DemoGoalsPreview } from "@/components/app/demo-goals";
 import { PageHeader } from "@/components/app/page-header";
 import { CalendarIcon } from "@/components/brand/icons";
 import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -13,14 +14,34 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { requireUser } from "@/lib/auth/guards";
 import { getCurrentUserContext } from "@/lib/data/profile";
 import { getActiveGoalCount } from "@/lib/data/goals";
-import { getMyUpcomingBookings } from "@/lib/data/bookings-list";
+import {
+  getMyUpcomingSessions,
+  type UpcomingSessionKind,
+} from "@/lib/data/upcoming-sessions";
 import { isDemoModeEnabled, DEMO_DASHBOARD_DISCLAIMER, DEMO_LABEL } from "@/lib/demo/fixtures";
 import {
   bookingStatusLabels,
   bookingStatusTones,
   educationLevelLabels,
   labelFor,
+  sessionStatusLabels,
+  sessionStatusTones,
 } from "@/lib/status";
+
+const SESSION_KIND_LABELS: Record<UpcomingSessionKind, string> = {
+  mentoring: "Mentoring",
+  group: "Kelompok",
+  partner: "Partner",
+};
+
+const SESSION_KIND_TONES: Record<
+  UpcomingSessionKind,
+  "info" | "neutral" | "accent"
+> = {
+  mentoring: "info",
+  group: "neutral",
+  partner: "accent",
+};
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -38,14 +59,14 @@ export default async function DashboardPage({
   const displayName = profile?.display_name ?? "Pelajar";
   const isMinor = safety?.age_band === "under_18";
 
-  const [activeGoalCount, upcomingBookings] = await Promise.all([
+  const [activeGoalCount, upcomingSessions] = await Promise.all([
     getActiveGoalCount(user.id),
-    getMyUpcomingBookings(user.id),
+    getMyUpcomingSessions(user.id),
   ]);
 
   const demoEnabled = isDemoModeEnabled();
   const isAccountEmpty =
-    activeGoalCount === 0 && upcomingBookings.length === 0;
+    activeGoalCount === 0 && upcomingSessions.length === 0;
 
   return (
     <div>
@@ -86,14 +107,14 @@ export default async function DashboardPage({
         </Alert>
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2">
+      <section className="grid gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm text-muted">
               Tujuan belajar aktif
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-end justify-between gap-3">
+          <CardContent className="flex flex-wrap items-end justify-between gap-3">
             <p className="text-3xl font-semibold">{activeGoalCount}</p>
             <Link
               href="/goals/new"
@@ -103,68 +124,83 @@ export default async function DashboardPage({
             </Link>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted">
-              Sesi mentoring mendatang
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-end justify-between gap-3">
-            <p className="text-3xl font-semibold">{upcomingBookings.length}</p>
-            <Link
-              href="/discover?tab=mentor"
-              className={buttonClasses("secondary", "sm", "no-underline")}
-            >
-              Cari mentor
-            </Link>
-          </CardContent>
-        </Card>
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Sesi mentoring mendatang</CardTitle>
+            <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+              <CardTitle>Sesi belajar mendatang</CardTitle>
+              <Badge tone="info">{upcomingSessions.length} sesi</Badge>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              {upcomingBookings.length === 0 ? (
+              {upcomingSessions.length === 0 ? (
                 <EmptyState
                   icon={<CalendarIcon className="size-5" />}
                   title="Belum ada sesi"
-                  description="Temukan mentor terverifikasi dan ajukan sesi gratis untuk memulai."
+                  description="Temukan partner, kelompok, atau mentor untuk mengisi jadwal belajarmu."
                   action={
-                    <Link
-                      href="/discover"
-                      className={buttonClasses("primary", "sm", "no-underline")}
-                    >
-                      Jelajahi mentor
-                    </Link>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <Link
+                        href="/discover"
+                        className={buttonClasses(
+                          "primary",
+                          "sm",
+                          "no-underline",
+                        )}
+                      >
+                        Jelajahi partner & kelompok
+                      </Link>
+                      <Link
+                        href="/discover?tab=mentor"
+                        className={buttonClasses(
+                          "secondary",
+                          "sm",
+                          "no-underline",
+                        )}
+                      >
+                        Cari mentor
+                      </Link>
+                    </div>
                   }
                 />
               ) : (
-                upcomingBookings.map((booking) => (
+                upcomingSessions.map((session) => (
                   <div
-                    key={booking.id}
+                    key={session.id}
                     className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-card)] border border-border p-4"
                   >
-                    <div>
-                      <p className="text-sm font-medium">
-                        {booking.service_title_snapshot}
-                      </p>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge tone={SESSION_KIND_TONES[session.kind]}>
+                          {SESSION_KIND_LABELS[session.kind]}
+                        </Badge>
+                        <p className="text-sm font-medium">{session.title}</p>
+                      </div>
                       <p className="text-xs text-muted">
-                        {new Date(booking.starts_at).toLocaleString("id-ID")}
+                        {session.context ? `${session.context} · ` : ""}
+                        {new Date(session.starts_at).toLocaleString("id-ID", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <StatusBadge
-                        value={booking.status}
-                        labels={bookingStatusLabels}
-                        tones={bookingStatusTones}
+                        value={session.status}
+                        labels={
+                          session.kind === "mentoring"
+                            ? bookingStatusLabels
+                            : sessionStatusLabels
+                        }
+                        tones={
+                          session.kind === "mentoring"
+                            ? bookingStatusTones
+                            : sessionStatusTones
+                        }
                       />
                       <Link
-                        href={`/bookings/${booking.id}`}
+                        href={session.href}
                         className={buttonClasses(
                           "secondary",
                           "sm",

@@ -1,13 +1,113 @@
-# Mode Demo (Konten Contoh)
+# Mode Demo
 
-Mode demo menampilkan **kartu contoh** untuk partner, kelompok, mentor, tujuan
-belajar, sesi, dan pratinjau dashboard kosong, yang semuanya diberi label tebal
-`Contoh Demo`. Isinya statis (file fixture), bukan data database — jadi tidak
-pernah bercampur dengan akun nyata dan tidak bisa mencemari data produksi.
+EduPulse punya dua lapis mode demo:
+
+1. **Data demo interaktif (disarankan untuk review).** `npm run seed-demo`
+   menulis akun, tujuan, kelompok, sesi, booking, dan permintaan belajar ke
+   database demo/staging. Semua bisa dipakai end-to-end: login, ajukan partner,
+   booking mentor, update progres, dan mengelola sesi.
+2. **Kartu contoh statis.** Fixture di `src/lib/demo/fixtures.ts` tetap dipakai
+   sebagai fallback saat suatu area masih kosong. Kartu ini hanya tampilan dan
+   tidak pernah ditulis ke database.
+
+Jangan aktifkan mode demo di produksi.
+
+## 1. Data demo interaktif
+
+### Prasyarat environment
+
+Tambahkan ke `.env.local` (atau environment staging):
+
+```
+NEXT_PUBLIC_DEMO_MODE=true
+DEMO_SEED_ENABLED=true
+DEMO_SEED_CONFIRM=seed-edupulse-demo
+DATABASE_URL=postgresql://postgres.<project-ref>:<password>@<host>:5432/postgres
+```
+
+- `NEXT_PUBLIC_DEMO_MODE=true` juga membuat UI menampilkan banner mode demo.
+- `DEMO_SEED_ENABLED` dan `DEMO_SEED_CONFIRM` adalah gerbang khusus script.
+- Script menolak berjalan bila `NODE_ENV` atau `VERCEL_ENV` bernilai
+  `production`.
+- `DATABASE_URL` boleh memakai direct connection atau Supabase pooler. Bila
+  host `db.<project-ref>.supabase.co` tidak bisa di-resolve dari mesinmu, pakai
+  pooler (`aws-0-<region>.pooler.supabase.com:5432`) dengan user
+  `postgres.<project-ref>`.
+- Script tidak membutuhkan `SUPABASE_SERVICE_ROLE_KEY`. Akun demo dibuat lewat
+  SQL langsung ke `auth.users` dan `auth.identities`.
+
+### Perintah
+
+```
+npm run seed-demo    # hapus data demo lama, lalu buat ulang dari nol
+npm run reset-demo   # hapus semua data demo
+```
+
+Seed bersifat idempotent: data demo sebelumnya dihapus lebih dulu, lalu dibuat
+ulang dengan ID dan jadwal yang deterministik (relatif terhadap tanggal seed).
+
+### Akun demo
+
+Semua akun memakai password yang sama: `DemoEduPulse2026!`.
+
+| Email | Nama | Peran |
+| --- | --- | --- |
+| `demo.rani@demo.edupulse.test` | Demo — Rani | Mentor Python |
+| `demo.bagus@demo.edupulse.test` | Demo — Bagus | Mentor Matematika |
+| `demo.lia@demo.edupulse.test` | Demo — Lia | Pelajar utama |
+| `demo.dimas@demo.edupulse.test` | Demo — Dimas | Pelajar/partner |
+| `demo.ayu@demo.edupulse.test` | Demo — Ayu | Owner kelompok speaking |
+| `demo.nadia@demo.edupulse.test` | Demo — Nadia | Owner kelompok Python |
+| `demo.reza@demo.edupulse.test` | Demo — Reza | Pelajar/partner |
+
+Saran alur review:
+
+- Login sebagai **Demo — Lia** untuk dashboard, sesi mendatang, tujuan, dan
+  permintaan belajar.
+- Login sebagai **Demo — Rani** atau **Demo — Bagus** untuk sisi mentor, layanan,
+  slot, dan booking.
+- Login sebagai **Demo — Nadia** atau **Demo — Ayu** untuk mengelola kelompok
+  dan sesi kelompok.
+
+### Isi data demo
+
+- 7 akun dengan profil, topik, dan waktu luang.
+- 5 tujuan belajar dengan dukungan `partner`, `group`, dan/atau `mentor`.
+- 3 kelompok beserta anggota.
+- 3 sesi: dua sesi kelompok dan satu sesi partner tanpa kelompok.
+- 3 booking mentoring dengan status `pending`, `confirmed`, dan `completed`.
+- 3 permintaan partner, update progres tujuan, catatan sesi, checklist, feedback,
+  dan ringkasan mentoring.
+
+### Keamanan seed/reset
+
+- Hanya menyentuh akun dengan domain `@demo.edupulse.test`.
+- Hanya menghapus baris demo yang cocok dengan ID demo, relasi akun demo, atau
+  nama berprefix `Demo — `.
+- Tidak menghapus akun, tujuan, kelompok, atau sesi pengguna nyata.
+- Data turunan (anggota, checklist, catatan, feedback, booking) dihapus sebelum
+  akun demo agar tidak melanggar foreign key.
+
+## 2. Kartu contoh statis
+
+Kartu statis hanya muncul saat area terkait kosong dan `NEXT_PUBLIC_DEMO_MODE`
+aktif. Bila data nyata sudah ada, bagian statis disembunyikan agar tidak
+duplikat dengan data demo interaktif.
+
+| Halaman | Perilaku saat mode demo aktif |
+| --- | --- |
+| `/dashboard` | Pratinjau contoh muncul bila akun benar-benar kosong. |
+| `/discover?tab=partner` | Kartu "Partner contoh" muncul bila tidak ada kandidat. |
+| `/discover?tab=kelompok` | Kartu "Kelompok contoh" muncul bila belum ada kelompok. |
+| `/discover?tab=mentor` | Kartu "Mentor contoh" muncul bila belum ada mentor. |
+| `/groups` | Bagian "Kelompok contoh" muncul di bawah daftar kelompok publik. |
+| `/groups/[groupId]` | Contoh agenda/checklist sesi bila kelompok belum punya sesi. |
+| `/goals` | Kartu "Tujuan contoh" bila pengguna belum punya tujuan. |
+
+Semua kartu statis diberi label `Contoh Demo`. Mentor contoh tidak menerima
+pemesanan nyata dan tidak mengklaim terverifikasi.
 
 ## Mengaktifkan / menonaktifkan
-
-Satu variabel lingkungan:
 
 ```
 NEXT_PUBLIC_DEMO_MODE=true    # aktif
@@ -16,59 +116,19 @@ NEXT_PUBLIC_DEMO_MODE=false   # nonaktif (atau kosongkan / hapus)
 
 - Nilai apa pun selain `"true"` dianggap nonaktif, termasuk kosong dan `false`.
 - Letakkan di `.env.local` (dev), atau di environment staging/CI.
-- Di produksi **jangan** diisi `true`.
 - Karena ini variabel `NEXT_PUBLIC_*`, ubah nilainya lalu jalankan ulang
   (`npm run dev` / `npm run build && npm start`) agar terbaca.
 
-## Di mana konten demo muncul
-
-Konten demo hanya muncul saat area tersebut **kosong** (belum ada data nyata),
-dan hanya saat mode demo aktif. Bila akun sudah punya data nyata, bagian demo
-disembunyikan.
-
-| Halaman | Perilaku saat mode demo aktif |
-| --- | --- |
-| `/dashboard` | Pratinjau contoh muncul bila akun benar-benar kosong. |
-| `/discover?tab=partner` | Bagian "Profil contoh" muncul di bawah hasil nyata. |
-| `/discover?tab=kelompok` | Grid kelompok nyata, lalu bagian "Kelompok contoh". |
-| `/discover?tab=mentor` | Grid mentor terverifikasi, lalu kartu "Mentor contoh". |
-| `/groups` | Bagian "Kelompok contoh" muncul di bawah daftar kelompok publik. |
-| `/groups/[groupId]` | Contoh agenda/checklist sesi bila kelompok belum punya sesi. |
-| `/goals` | Kartu "Tujuan contoh" bila pengguna belum punya tujuan. |
-
-Bila daftar nyata kosong, kartu demo tetap muncul lengkap dengan CTA
-("Buat kelompok nyata" / "Buat profil mentor sungguhan" / "Buat tujuan"). Saat
-mode demo nonaktif, halaman menampilkan empty state yang menjelaskan kondisi dan
-menawarkan aksi yang relevan, tanpa konten contoh.
-
-## Batasan keamanan
-
-- **Tidak ada penulisan ke database.** Fixture hanya dirender oleh server
-  component; tidak ada `insert` di mana pun.
-- **Tidak menimpa data nyata.** Kartu demo dipisahkan dari daftar nyata dan
-  selalu diberi label `Contoh Demo`.
-- **Mentor demo tidak menerima pemesanan.** Tombol "Ajukan sesi" / "Kirim
-  permintaan" hanya tampilan, tidak ada tautan ke alur booking, dan tidak ada
-  aksi server yang menangani booking dari kartu demo.
-- **Tidak mengklaim terverifikasi.** Kartu mentor demo menampilkan
-  "Belum diajukan (contoh)" dan `Alert` peringatan bahwa itu bukan data nyata.
-- Tidak ada berkas `.md` ini yang membuka akses baru; RLS tetap berlaku.
-
-## Menambah / mengubah konten contoh
+## Menambah / mengubah konten contoh statis
 
 Semua fixture ada di `src/lib/demo/fixtures.ts`:
 
-- `DEMO_PARTNERS` — profil partner contoh (inisial, topik, tujuan belajar,
-  alasan kecocokan, ketersediaan).
-- `DEMO_GROUPS` — nama, deskripsi, topik, sampul (`coverKey` dari allow-list
-  sampul), jumlah anggota, dan agenda contoh.
-- `DEMO_MENTORS` — keahlian, deskripsi singkat, topik, pengalaman, dan info
-  layanan (mode, durasi, biaya contoh).
-- `DEMO_GOALS` — judul, deskripsi, dan progres contoh (untuk kartu dan
-  pratinjau ringkas).
-- `DEMO_SESSIONS` — judul, agenda, dan checklist contoh.
+- `DEMO_PARTNERS` — profil partner contoh.
+- `DEMO_GROUPS` — kelompok dan agenda contoh.
+- `DEMO_MENTORS` — mentor dan layanan contoh.
+- `DEMO_GOALS` — tujuan dan progres contoh.
+- `DEMO_SESSIONS` — agenda dan checklist contoh.
 
-Masing-masing punya konstanta `DEMO_*_DISCLAIMER` yang menjelaskan bahwa itu
-hanya tampilan. Nilai `coverKey` harus salah satu dari kunci sampul yang
-tersedia (`programming`, `mathematics`, `language`, `science`, `design`); jika
-tidak, `getGroupCover()` otomatis memakai ilustrasi bawaan.
+Masing-masing punya konstanta `DEMO_*_DISCLAIMER`. Nilai `coverKey` harus salah
+satu dari kunci sampul yang tersedia (`programming`, `mathematics`, `language`,
+`science`, `design`); jika tidak, `getGroupCover()` memakai ilustrasi bawaan.

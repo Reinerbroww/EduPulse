@@ -172,7 +172,7 @@ Skema didefinisikan di `supabase/migrations/20261014160516_002_tables.sql`. Semu
 3. **topics** — id, name (unik), slug (unik), description, is_active, created_at.
 4. **profile_topics** — (profile_id, topic_id) PK, interest_type, skill_level, created_at.
 5. **user_availability** — id, user_id, day_of_week (0–6), start_time, end_time (end > start), is_active, created_at.
-6. **learning_goals** — id, user_id, topic_id, title, description, target_date, support_mode, visibility, status, created_at, updated_at.
+6. **learning_goals** — id, user_id, topic_id, title, description, target_date, support_modes, visibility, status, created_at, updated_at.
 7. **study_partner_requests** — id, requester_id, recipient_id, learning_goal_id, message, status, responded_at, created_at, updated_at (tidak boleh diri sendiri).
 8. **study_groups** — id, owner_id, learning_goal_id, topic_id, name, description, max_members (≥2), visibility, status, created_at, updated_at.
 9. **study_group_members** — id, group_id, user_id, role, status, requested_at, responded_at, joined_at (unik per grup+user).

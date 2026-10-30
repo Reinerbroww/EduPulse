@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { listActiveTopics } from "@/lib/data/topics";
+import { DEMO_NAME_PREFIX, isDemoModeEnabled } from "@/lib/demo/fixtures";
 
 export interface ProfileSummary {
   id: string;
@@ -17,7 +18,7 @@ export interface TaggedTopic {
 }
 
 export interface MatchReason {
-  kind: "topic" | "goal" | "availability";
+  kind: "topic" | "goal" | "availability" | "demo";
   label: string;
 }
 
@@ -32,7 +33,7 @@ export interface PartnerGoal {
   title: string;
   topic_id: string | null;
   topicName: string | null;
-  support_mode: string;
+  support_modes: string[];
   target_date: string | null;
 }
 
@@ -191,6 +192,7 @@ function buildReasons(
 
 function scoreReasons(reasons: MatchReason[]): number {
   return reasons.reduce((total, reason) => {
+    if (reason.kind === "demo") return total;
     if (reason.kind === "topic") return total + 3;
     if (reason.kind === "goal") return total + 2;
     return total + 1;
@@ -216,9 +218,7 @@ export async function listMatchCandidates(): Promise<MatchCandidate[]> {
         .select("profile_id, topic_id, interest_type, skill_level"),
       supabase
         .from("learning_goals")
-        .select(
-          "user_id, topic_id, title, support_mode, status, visibility",
-        ),
+        .select("user_id, topic_id, title, status, visibility"),
       supabase
         .from("user_availability")
         .select("user_id, day_of_week, is_active"),
@@ -271,6 +271,7 @@ export async function listMatchCandidates(): Promise<MatchCandidate[]> {
   };
 
   const topicNames = await getTopicNameMap();
+  const demoMode = isDemoModeEnabled();
 
   const candidates: MatchCandidate[] = [];
 
@@ -298,7 +299,12 @@ export async function listMatchCandidates(): Promise<MatchCandidate[]> {
     };
 
     const reasons = buildReasons(viewer, candidate, topicNames);
-    if (reasons.length === 0) continue;
+    const isDemoProfile = profile.display_name?.startsWith(DEMO_NAME_PREFIX);
+
+    if (reasons.length === 0 && !(demoMode && isDemoProfile)) continue;
+    if (reasons.length === 0 && demoMode && isDemoProfile) {
+      reasons.push({ kind: "demo", label: "Profil demo untuk dicoba" });
+    }
 
     candidates.push({
       profile,
@@ -346,7 +352,7 @@ export async function getPartnerDetail(
         .eq("profile_id", partnerId),
       supabase
         .from("learning_goals")
-        .select("id, title, topic_id, support_mode, target_date, status, visibility")
+        .select("id, title, topic_id, support_modes, target_date, status, visibility")
         .eq("user_id", partnerId)
         .eq("status", "active")
         .eq("visibility", "matchable")
@@ -387,7 +393,7 @@ export async function getPartnerDetail(
     id: string;
     title: string;
     topic_id: string | null;
-    support_mode: string;
+    support_modes: string[];
     target_date: string | null;
   }[];
 
@@ -432,7 +438,7 @@ export async function getPartnerDetail(
       title: g.title,
       topic_id: g.topic_id,
       topicName: g.topic_id ? topicNames.get(g.topic_id) ?? null : null,
-      support_mode: g.support_mode,
+      support_modes: g.support_modes,
       target_date: g.target_date,
     })),
     availabilityDays,

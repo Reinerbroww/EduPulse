@@ -1,13 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import { SubmitButton } from "@/components/auth/submit-button";
+import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { addGoalProgressUpdate } from "@/lib/mentoring/actions";
 import { initialFormState } from "@/lib/forms/state";
+
+const QUICK_STEPS = [5, 10, 25] as const;
 
 export function GoalProgressForm({
   goalId,
@@ -24,6 +27,10 @@ export function GoalProgressForm({
     addGoalProgressUpdate,
     initialFormState,
   );
+  const [progress, setProgress] = useState(defaultPercent);
+
+  const clampProgress = (value: number) =>
+    Math.min(100, Math.max(0, Math.round(value)));
 
   return (
     <form action={formAction} className="flex flex-col gap-4" noValidate>
@@ -47,19 +54,61 @@ export function GoalProgressForm({
       <Field
         id="progressPercent"
         label="Progres saat ini (%)"
-        hint="Perkiraan seberapa jauh kamu merasa sudah berkembang menuju target."
+        hint="Geser slider atau pakai tombol cepat untuk memperbarui progres."
         error={state.fieldErrors?.progressPercent}
       >
-        <Input
-          id="progressPercent"
-          name="progressPercent"
-          type="number"
-          min={0}
-          max={100}
-          defaultValue={defaultPercent}
-          required
-        />
+        <div className="flex items-center gap-3">
+          <input
+            id="progressPercent"
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={progress}
+            onChange={(event) =>
+              setProgress(clampProgress(Number(event.target.value)))
+            }
+            className="h-2 w-full cursor-pointer accent-[var(--color-primary)]"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
+          />
+          <span className="w-14 shrink-0 text-right text-sm font-semibold text-ink">
+            {progress}%
+          </span>
+        </div>
+        <input type="hidden" name="progressPercent" value={progress} />
       </Field>
+
+      <div className="flex flex-wrap gap-2">
+        {QUICK_STEPS.map((step) => (
+          <Button
+            key={step}
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => setProgress((value) => clampProgress(value + step))}
+          >
+            +{step}%
+          </Button>
+        ))}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setProgress((value) => clampProgress(value - 5))}
+        >
+          -5%
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setProgress(0)}
+        >
+          Reset
+        </Button>
+      </div>
 
       <Field
         id="updateText"

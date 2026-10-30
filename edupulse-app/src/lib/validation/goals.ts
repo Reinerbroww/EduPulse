@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const supportModeSchema = z.enum(["partner", "group", "mentor", "any"]);
+export const supportModeSchema = z.enum(["partner", "group", "mentor"]);
+
+export const supportModesSchema = z
+  .array(supportModeSchema)
+  .min(1, "Pilih minimal satu dukungan belajar.")
+  .max(3);
 
 export const goalVisibilitySchema = z.enum(["private", "matchable"]);
 
@@ -26,7 +31,7 @@ export const learningGoalSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Format tanggal tidak valid.")
     .optional()
     .or(z.literal("")),
-  supportMode: supportModeSchema,
+  supportModes: supportModesSchema,
   visibility: goalVisibilitySchema,
 });
 

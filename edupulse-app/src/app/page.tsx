@@ -218,7 +218,6 @@ export default function Home() {
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>EduPulse — ruang belajar bersama.</span>
-          <span>MVP Milestone 1 · Data mentor &amp; pembayaran manual.</span>
         </div>
       </footer>
     </div>

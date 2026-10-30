@@ -121,7 +121,7 @@ export default async function GroupsPage() {
           </CardContent>
         </Card>
 
-        {demoEnabled ? <DemoGroupsSection /> : null}
+        {demoEnabled && groups.length === 0 ? <DemoGroupsSection /> : null}
       </div>
     </div>
   );

@@ -16,9 +16,9 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { requireUser } from "@/lib/auth/guards";
 import { getGoalProgress } from "@/lib/data/mentoring";
 import {
+  formatSupportModes,
   learningGoalStatusLabels,
   learningGoalStatusTones,
-  supportModeLabels,
 } from "@/lib/status";
 
 interface GoalProgressPageProps {
@@ -111,10 +111,7 @@ export default async function GoalProgressPage({
                 penguasaan materi otomatis.
               </p>
               <div className="flex flex-wrap gap-2 text-xs text-muted">
-                <span>
-                  Dukungan:{" "}
-                  {supportModeLabels[goal.support_mode] ?? goal.support_mode}
-                </span>
+                <span>Dukungan: {formatSupportModes(goal.support_modes)}</span>
                 {goal.target_date && <span>Target: {goal.target_date}</span>}
               </div>
             </CardContent>

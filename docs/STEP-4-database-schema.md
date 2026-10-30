@@ -143,7 +143,7 @@ Tujuan belajar milik pengguna. Matching hanya menggunakan tujuan yang statusnya 
 | `title` | `text` | Wajib |
 | `description` | `text` | NULL |
 | `target_date` | `date` | NULL; target tanggal opsional |
-| `support_mode` | `text` | Wajib; `partner`, `group`, `mentor`, atau `any` |
+| `support_modes` | `text[]` | Wajib; minimal satu dari `partner`, `group`, `mentor` |
 | `visibility` | `text` | Wajib; `private` atau `matchable`, default `matchable` |
 | `status` | `text` | Wajib; `active`, `completed`, `paused`, atau `archived`; default `active` |
 | `created_at` | `timestamptz` | Wajib |

@@ -12,9 +12,9 @@ import { requireUser } from "@/lib/auth/guards";
 import { getLearningGoals } from "@/lib/data/goals";
 import { isDemoModeEnabled } from "@/lib/demo/fixtures";
 import {
+  formatSupportModes,
   learningGoalStatusLabels,
   learningGoalStatusTones,
-  supportModeLabels,
 } from "@/lib/status";
 
 export const metadata: Metadata = { title: "Tujuan belajar" };
@@ -69,8 +69,7 @@ export default async function GoalsPage() {
                     <h3 className="text-base font-semibold">{goal.title}</h3>
                     <p className="text-xs text-muted">
                       {goal.topics?.name ?? "Tanpa topik"} ·{" "}
-                      {supportModeLabels[goal.support_mode] ??
-                        goal.support_mode}
+                      {formatSupportModes(goal.support_modes)}
                       {goal.target_date
                         ? ` · Target ${goal.target_date}`
                         : ""}
@@ -98,8 +97,7 @@ export default async function GoalsPage() {
                   >
                     Ubah
                   </Link>
-                  {goal.support_mode === "mentor" ||
-                  goal.support_mode === "any" ? (
+                  {goal.support_modes.includes("mentor") ? (
                     <Link
                       href="/discover"
                       className={buttonClasses(

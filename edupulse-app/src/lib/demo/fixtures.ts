@@ -4,13 +4,15 @@ import type { GroupCoverKey } from "@/lib/groups/covers";
  * Demo mode.
  *
  * The fixtures below are *static content rendered by the UI* — they are never
- * inserted into the database, so they can never mix with real accounts or land
- * in production data. Demo mode is off unless explicitly enabled with
- * `NEXT_PUBLIC_DEMO_MODE=true` (see docs/demo-mode.md) and every demo card is
- * labelled "Contoh Demo".
+ * inserted into the database. For interactive demo accounts and end-to-end data,
+ * run `npm run seed-demo` (see docs/demo-mode.md). Demo mode is off unless
+ * explicitly enabled with `NEXT_PUBLIC_DEMO_MODE=true`, and every static demo
+ * card is labelled "Contoh Demo".
  */
 
 export const DEMO_LABEL = "Contoh Demo";
+
+export const DEMO_NAME_PREFIX = "Demo — ";
 
 export const DEMO_MENTOR_DISCLAIMER =
   "Kartu ini hanya contoh. Mentor demo tidak menerima pemesanan nyata dan bukan mentor terverifikasi.";

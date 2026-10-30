@@ -5,9 +5,10 @@ import { useActionState } from "react";
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Field } from "@/components/ui/field";
-import { Input, Select, Textarea } from "@/components/ui/input";
+import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { createLearningGoal, updateLearningGoal } from "@/lib/goals/actions";
 import { initialFormState } from "@/lib/forms/state";
+import { supportModeLabels } from "@/lib/status";
 import type { TopicRow } from "@/lib/data/topics";
 import type { GoalListItem } from "@/lib/data/goals";
 
@@ -24,6 +25,10 @@ export function GoalForm({
   const [state, formAction] = useActionState(
     goal ? updateLearningGoal : createLearningGoal,
     initialFormState,
+  );
+
+  const selectedSupportModes = new Set(
+    goal?.support_modes ?? ["partner", "group", "mentor"],
   );
 
   return (
@@ -84,22 +89,36 @@ export function GoalForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          id="supportMode"
-          label="Dukungan yang dicari"
-          error={state.fieldErrors?.supportMode}
-        >
-          <Select
-            id="supportMode"
-            name="supportMode"
-            defaultValue={goal?.support_mode ?? "any"}
-          >
-            <option value="any">Semua pilihan</option>
-            <option value="partner">Partner belajar</option>
-            <option value="group">Kelompok belajar</option>
-            <option value="mentor">Mentor</option>
-          </Select>
-        </Field>
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-ink">
+            Dukungan yang dicari
+          </legend>
+          <p className="text-xs text-muted">Boleh pilih lebih dari satu.</p>
+          <div className="grid gap-2">
+            {(["partner", "group", "mentor"] as const).map((mode) => (
+              <Label
+                key={mode}
+                htmlFor={`supportMode-${mode}`}
+                className="flex cursor-pointer items-center gap-2 rounded-[var(--radius-control)] border border-border bg-surface px-3 py-2 text-sm font-normal"
+              >
+                <input
+                  id={`supportMode-${mode}`}
+                  type="checkbox"
+                  name="supportModes"
+                  value={mode}
+                  defaultChecked={selectedSupportModes.has(mode)}
+                  className="h-4 w-4 accent-[var(--color-primary)]"
+                />
+                {supportModeLabels[mode]}
+              </Label>
+            ))}
+          </div>
+          {state.fieldErrors?.supportModes ? (
+            <p className="text-xs text-danger">
+              {state.fieldErrors.supportModes}
+            </p>
+          ) : null}
+        </fieldset>
 
         <Field
           id="visibility"
